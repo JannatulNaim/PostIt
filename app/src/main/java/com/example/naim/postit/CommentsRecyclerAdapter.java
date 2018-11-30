@@ -3,7 +3,6 @@ package com.example.naim.postit;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Date;
 import java.util.List;
 
 public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.ViewHolder> {
@@ -58,8 +56,7 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecycl
                 millisecond = commentsList.get(position).gettimestamp().getTime();
                 CommentTime commentTime = new CommentTime();
                 String lasttime = commentTime.CommentTime(millisecond,context);
-
-                //String dateString = DateFormat.format("hh:mm a", new Date(millisecond)).toString();
+                
                 holder.setTime(lasttime);
             }
         }
