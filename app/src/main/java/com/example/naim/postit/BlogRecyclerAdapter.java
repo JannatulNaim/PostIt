@@ -1,8 +1,10 @@
 package com.example.naim.postit;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -231,38 +233,60 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
             @Override
             public void onClick(View v) {
 
-                //Remove Like
-                firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(currentUserId).delete();
 
-                //Remove Comment
-                firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").
-                        addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogTheme);
+                builder.setMessage("Do you want to Delete the Post ?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+                                //Remove Like
+                                firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(currentUserId).delete();
 
-                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                //Remove Comment
+                                firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").
+                                        addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
-                                String commentId = doc.getDocument().getId();
-                                firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").document(commentId).delete();
+                                                if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+
+                                                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+
+                                                        String commentId = doc.getDocument().getId();
+                                                        firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").document(commentId).delete();
+
+                                                    }
+
+                                                }
+                                            }
+                                        });
+
+
+                                //Remove Post
+                                firebaseFirestore.collection("Posts").document(blogPostId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        blog_list.remove(position);
+                                        notifyDataSetChanged();
+                                        Toast.makeText(context, "Post Deleted !!!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
 
                             }
-
-                        }
-                    }
-                });
-
-
-                //Remove Post
-                firebaseFirestore.collection("Posts").document(blogPostId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        blog_list.remove(position);
-                        notifyDataSetChanged();
-                        Toast.makeText(context, "Post Deleted !!!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alertDialog  = builder.create();
+                alertDialog.setTitle("Delete Post !!!");
+                alertDialog.setIcon(R.drawable.baseline_warning_black_24);
+                alertDialog.show();
 
             }
         });
