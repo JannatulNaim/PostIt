@@ -37,6 +37,7 @@
         android:ems="10"
         android:hint="@string/setup_name_hint_text"
         android:inputType="textPersonName"
+        android:maxLength="20"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"
         android:textSize="20sp"

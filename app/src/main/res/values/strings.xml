@@ -21,6 +21,7 @@
     <string name="bottom_home_text">Home</string>
     <string name="bottom_notification_text">Notification</string>
     <string name="bottom_ac_text">Account</string>
+    <string name="userInfo">All the information of an user are shown here, like - Personal details,Posts,Followers, e.t.c (IN UPDATE)</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -101,7 +101,6 @@ public class SetupActivity extends AppCompatActivity {
 
                         Glide.with(SetupActivity.this).setDefaultRequestOptions(placeholderRequest).load(image).into(setupImage);
 
-
                     }
 
                 } else {
@@ -122,6 +121,13 @@ public class SetupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String user_name = setupName.getText().toString();
+
+                if(TextUtils.isEmpty(user_name)){
+                    Toast.makeText(SetupActivity.this, "Please Enter Your Name (Max Word: 25)!!!", Toast.LENGTH_SHORT).show();
+                }
+                if(mainImageURI == null){
+                    Toast.makeText(SetupActivity.this, "Please Select an Image !!!", Toast.LENGTH_SHORT).show();
+                }
 
                 if (!TextUtils.isEmpty(user_name) && mainImageURI != null) {
 

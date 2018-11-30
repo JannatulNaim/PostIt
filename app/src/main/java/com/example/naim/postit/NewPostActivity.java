@@ -95,6 +95,12 @@ public class NewPostActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 final String desc = newPostDesc.getText().toString();
+                if(TextUtils.isEmpty(desc)){
+                    Toast.makeText(NewPostActivity.this, "Enter Text in Description !!!", Toast.LENGTH_SHORT).show();
+                }
+                if(postImageUri == null){
+                    Toast.makeText(NewPostActivity.this, "Please Select an Image !!!", Toast.LENGTH_SHORT).show();
+                }
 
                 if(!TextUtils.isEmpty(desc) && postImageUri != null){
 

@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                    if (!documentSnapshots.isEmpty()) {
+                    if (documentSnapshots!=null && !documentSnapshots.isEmpty()) {
 
                         lastVisible = documentSnapshots.getDocuments().get(documentSnapshots.size()-1);
                         for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {

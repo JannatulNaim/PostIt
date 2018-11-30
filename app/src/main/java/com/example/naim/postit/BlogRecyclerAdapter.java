@@ -8,6 +8,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,6 +43,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
     private FirebaseFirestore firebaseFirestore;
     private FirebaseAuth firebaseAuth;
 
+
     public BlogRecyclerAdapter(List<BlogPost> blog_list){
 
         this.blog_list = blog_list;
@@ -59,7 +62,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         holder.setIsRecyclable(false);
 
@@ -75,12 +78,19 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
         String user_id = blog_list.get(position).getUser_id();
 
+        if(user_id.equals(currentUserId)){
+            holder.deletePost.setEnabled(true);
+            holder.deletePost.setVisibility(View.VISIBLE);
+        }
+
         try {
 
             if (blog_list.get(position).getTimestamp() != null) {
                 long millisecond = blog_list.get(position).getTimestamp().getTime();
                 String dateString = DateFormat.format("EEE, MMM d, ''yy", new Date(millisecond)).toString();
+
                 holder.setTime(dateString);
+
 
             }
 
@@ -216,6 +226,19 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
             }
         });
 
+        holder.deletePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firebaseFirestore.collection("Posts").document(blogPostId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        blog_list.remove(position);
+                        Toast.makeText(context, "Post Deleted !!!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
     }
 
 
@@ -242,6 +265,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
         private TextView blogCommentCount;
 
         private ImageView blogCommentBtn;
+        private Button deletePost;
 
 
         public ViewHolder(View itemView) {
@@ -250,6 +274,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
             blogLikeBtn = mView.findViewById(R.id.blog_like_btn);
             blogCommentBtn = mView.findViewById(R.id.blog_comment_icon);
+            deletePost = mView.findViewById(R.id.btn_post_delete);
 
         }
 
@@ -303,7 +328,12 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
         public void setLastTime(String lasttime) {
             lastTime = mView.findViewById(R.id.last_time);
-            lastTime.setText("Posted - "+lasttime);
+            if(lasttime==null){
+                lastTime.setText("Posted - just now");
+            }
+            else {
+                lastTime.setText("Posted - "+lasttime);
+            }
         }
 
         public void updateCommentCount(int i) {
