@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -229,13 +230,40 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
         holder.deletePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Remove Like
+                firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(currentUserId).delete();
+
+                //Remove Comment
+                firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").
+                        addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+
+                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+
+                                String commentId = doc.getDocument().getId();
+                                firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").document(commentId).delete();
+
+                            }
+
+                        }
+                    }
+                });
+
+
+                //Remove Post
                 firebaseFirestore.collection("Posts").document(blogPostId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         blog_list.remove(position);
+                        notifyDataSetChanged();
                         Toast.makeText(context, "Post Deleted !!!", Toast.LENGTH_SHORT).show();
                     }
                 });
+
             }
         });
 

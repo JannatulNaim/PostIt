@@ -78,7 +78,7 @@ public class CommentsActivity extends AppCompatActivity {
                     @Override
                     public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-                        if (!documentSnapshots.isEmpty()) {
+                        if (documentSnapshots!=null && !documentSnapshots.isEmpty()) {
 
                             for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
 
@@ -88,7 +88,6 @@ public class CommentsActivity extends AppCompatActivity {
                                     Comments comments = doc.getDocument().toObject(Comments.class);
                                     commentsList.add(comments);
                                     commentsRecyclerAdapter.notifyDataSetChanged();
-
 
                                 }
                             }
