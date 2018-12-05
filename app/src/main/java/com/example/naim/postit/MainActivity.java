@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
 
-                    switch (item.getItemId()) {
+                        switch (item.getItemId()) {
 
                         case R.id.bottom_action_home:
 

@@ -77,6 +77,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
         String image_url = blog_list.get(position).getImage_url();
         String thumbUri = blog_list.get(position).getImage_thumb();
+
         holder.setBlogImage(image_url, thumbUri);
 
         String user_id = blog_list.get(position).getUser_id();
@@ -117,9 +118,10 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
 
                     String userName = task.getResult().getString("name");
                     String userImage = task.getResult().getString("image");
+                    String admin = task.getResult().getString("admin");
+                    holder.admin.setText(admin);
 
                     holder.setUserData(userName, userImage);
-
 
                 } else {
 
@@ -242,7 +244,24 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
                             public void onClick(DialogInterface dialog, int which) {
 
                                 //Remove Like
-                                firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(currentUserId).delete();
+                                firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").
+                                        addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+                                                if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+
+                                                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+
+                                                        String LikeId = doc.getDocument().getId();
+                                                        firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(LikeId).delete();
+
+                                                    }
+
+                                                }
+                                            }
+                                        });
+
 
                                 //Remove Comment
                                 firebaseFirestore.collection("Posts/" + blogPostId + "/Comments").
@@ -307,6 +326,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
         private ImageView blogImageView;
         private TextView blogDate;
         private TextView lastTime;
+        private TextView admin;
 
         private TextView blogUserName;
         private CircleImageView blogUserImage;
@@ -327,6 +347,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
             blogLikeBtn = mView.findViewById(R.id.blog_like_btn);
             blogCommentBtn = mView.findViewById(R.id.blog_comment_icon);
             deletePost = mView.findViewById(R.id.btn_post_delete);
+            admin = mView.findViewById(R.id.admin);
 
         }
 

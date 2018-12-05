@@ -25,6 +25,7 @@ public class AccountFragment extends Fragment {
 
     private ImageView userImage;
     private TextView userName;
+    private TextView admin1;
     private FirebaseFirestore firebaseFirestore;
     private FirebaseAuth firebaseAuth;
     private String user_id;
@@ -46,6 +47,7 @@ public class AccountFragment extends Fragment {
         firebaseFirestore = FirebaseFirestore.getInstance();
         userImage = view.findViewById(R.id.profile_image);
         userName = view.findViewById(R.id.profile_name);
+        admin1 = view.findViewById(R.id.admin);
 
         if(firebaseAuth.getCurrentUser() != null) {
 
@@ -59,8 +61,10 @@ public class AccountFragment extends Fragment {
 
                             String name = task.getResult().getString("name");
                             String image = task.getResult().getString("image");
+                            String admin = task.getResult().getString("admin");
 
                             userName.setText(name);
+                            admin1.setText(admin);
 
                             RequestOptions placeholderRequest = new RequestOptions();
                             placeholderRequest.placeholder(R.drawable.default_image);
